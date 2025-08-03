@@ -116,20 +116,14 @@ const selectTopic = async (topicId: number) => {
 
 // --- AUTH ---
 const handleGoogleLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      // This explicitly tells Supabase where to send the user back to.
-      redirectTo: 'https://manavo-o.github.io/tutor-connect/'
+      // This is the final, definitive fix.
+      // We are explicitly telling Supabase to redirect to the index.html file.
+      redirectTo: 'https://manavo-o.github.io/tutor-connect/index.html'
     }
   });
-
-  // If Supabase gives us a URL, we manually redirect the user.
-  if (data.url) {
-    window.location.href = data.url;
-  } else if (error) {
-    alert('Error logging in with Google: ' + error.message);
-  }
 };
 
 const handleAuth = async (session: Session | null) => {
