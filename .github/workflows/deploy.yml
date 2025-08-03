@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ] # Run this workflow every time you commit to the main branch
 
+# THIS IS THE NEW BLOCK THAT GRANTS PERMISSION
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
