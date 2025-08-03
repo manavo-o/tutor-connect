@@ -19,12 +19,20 @@ export default defineConfig({
   },
 
   plugins: [
-    // This is the new part that copies the 404.html file.
+    // This plugin now does TWO jobs:
     viteStaticCopy({
       targets: [
+        // Job 1: Copy 404.html to the output for normal 404 errors.
         {
           src: '404.html',
-          dest: '.' // copy to the root of the 'dist' folder
+          dest: '.' 
+        },
+        // Job 2: Copy 404.html again, but rename it to index.html.
+        // This creates our "dummy index" redirector page.
+        {
+          src: '404.html',
+          dest: '.',
+          rename: 'index.html'
         }
       ]
     })
