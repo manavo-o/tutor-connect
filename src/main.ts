@@ -119,9 +119,8 @@ const handleGoogleLogin = async () => {
   await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      // This is the final, definitive fix.
-      // We are explicitly telling Supabase to redirect to the index.html file.
-      redirectTo: 'https://manavo-o.github.io/tutor-connect/index.html'
+      // We specify the folder path. The browser should handle the rest.
+      redirectTo: 'https://manavo-o.github.io/tutor-connect/'
     }
   });
 };
@@ -152,10 +151,20 @@ const handleAuth = async (session: Session | null) => {
 };
 
 // --- EVENT LISTENERS ---
-document.addEventListener('DOMContentLoaded', () => {
-  if (googleLoginBtn) googleLoginBtn.addEventListener('click', handleGoogleLogin);
-  if (logoutBtn) logoutBtn.addEventListener('click', () => supabase.auth.signOut());
-  if (messageForm) messageForm.addEventListener('submit', async (e) => {
+// This listener is the key. It runs as soon as the page loads and
+// handles the session information from the URL hash.
+supabase.auth.onAuthStateChange((_event, session) => {
+  handleAuth(session);
+});
+
+if (googleLoginBtn) {
+  googleLoginBtn.addEventListener('click', handleGoogleLogin);
+}
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => supabase.auth.signOut());
+}
+if (messageForm) {
+  messageForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = messageInput.value.trim();
     if (text && currentTopicId && currentUser) {
@@ -163,7 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageInput.value = '';
     }
   });
-  if (addSubjectBtn) addSubjectBtn.addEventListener('click', async () => {
+}
+if (addSubjectBtn) {
+  addSubjectBtn.addEventListener('click', async () => {
     const subjectName = prompt("Enter a new subject name (e.g., 'Algebra II'):");
     if (subjectName && currentProfile) {
       const { data } = await supabase.from('subjects').insert({ subject_name: subjectName, owner_id: currentProfile.id }).select().single();
@@ -171,6 +182,4 @@ document.addEventListener('DOMContentLoaded', () => {
       else alert('Failed to create subject.');
     }
   });
-
-  supabase.auth.onAuthStateChange((_event, session) => handleAuth(session));
-});
+}
