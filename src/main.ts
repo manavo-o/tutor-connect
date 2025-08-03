@@ -116,7 +116,20 @@ const selectTopic = async (topicId: number) => {
 
 // --- AUTH ---
 const handleGoogleLogin = async () => {
-  await supabase.auth.signInWithOAuth({ provider: 'google' });
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      // This explicitly tells Supabase where to send the user back to.
+      redirectTo: 'https://manavo-o.github.io/tutor-connect/'
+    }
+  });
+
+  // If Supabase gives us a URL, we manually redirect the user.
+  if (data.url) {
+    window.location.href = data.url;
+  } else if (error) {
+    alert('Error logging in with Google: ' + error.message);
+  }
 };
 
 const handleAuth = async (session: Session | null) => {
