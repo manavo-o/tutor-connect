@@ -13,26 +13,20 @@ export default defineConfig({
     outDir: '../dist', 
     rollupOptions: {
       input: {
+        // This correctly builds src/index.html into dist/index.html
         main: resolve(__dirname, 'src/index.html'),
       },
     },
   },
 
   plugins: [
-    // This plugin now does TWO jobs:
+    // This plugin now ONLY copies the 404.html file.
+    // It no longer overwrites your main application.
     viteStaticCopy({
       targets: [
-        // Job 1: Copy 404.html to the output for normal 404 errors.
         {
           src: '404.html',
-          dest: '.' 
-        },
-        // Job 2: Copy 404.html again, but rename it to index.html.
-        // This creates our "dummy index" redirector page.
-        {
-          src: '404.html',
-          dest: '.',
-          rename: 'index.html'
+          dest: '.' // copy to the root of the 'dist' folder
         }
       ]
     })
